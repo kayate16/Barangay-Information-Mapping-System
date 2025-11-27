@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}About - {{ super() }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-page {
+        padding: 2rem 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: calc(100vh - 120px);
+    }
+
+    .about-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .about-header h1 {
+        color: var(--primary);
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .about-header p {
+        color: var(--gray);
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .about-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .about-section {
+        background: white;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        border-left: 4px solid var(--primary);
+    }
+
+    .about-section h2 {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .about-section h2 i {
+        font-size: 1.5rem;
+    }
+
+    .about-section p {
+        line-height: 1.8;
+        color: var(--dark);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .tech-item {
+        background: var(--light);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        border: 1px solid #e2e8f0;
+    }
+
+    .tech-item h3 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tech-item ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .tech-item li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+    }
+
+    .tech-item li:before {
+        content: "▸";
+        color: var(--secondary);
+        font-weight: bold;
+        margin-right: 0.8rem;
+    }
+
+    .tech-item li:last-child {
+        border-bottom: none;
+    }
+
+    .objectives-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .objective-item {
+        background: var(--light);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--success);
+    }
+
+    .objective-item h3 {
+        color: var(--primary);
+        margin-bottom: 0.8rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .objective-item p {
+        color: var(--gray);
+        line-height: 1.6;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .team-info, .contact-info {
+        background: var(--light);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        margin-top: 1rem;
+    }
+
+    .team-info p, .contact-info p {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .team-info strong, .contact-info strong {
+        color: var(--primary);
+        min-width: 120px;
+    }
+
+    .feature-highlights {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .feature-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, var(--light), #e2e8f0);
+        border-radius: var(--border-radius);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+
+    .feature-item h4 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .feature-item p {
+        color: var(--gray);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .about-section {
+            padding: 1.5rem;
+        }
+        
+        .about-header h1 {
+            font-size: 2rem;
+        }
+        
+        .tech-grid, .objectives-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <div class="container">
+        <div class="about-header">
+            <h1>About the System</h1>
+            <p>Barangay Information Mapping System for Cagpile, Oras, Eastern Samar</p>
+        </div>
+
+        <div class="about-content">
+            <!-- Project Overview -->
+            <div class="about-section">
+                <h2><i class="fas fa-project-diagram"></i> Project Overview</h2>
+                <p>This Barangay Information Mapping System is developed as part of the research study conducted by Eastern Samar State University. The system leverages QGIS and modern web technologies to provide an accessible platform for community planning and disaster risk reduction.</p>
+                <p>Our mission is to digitize barangay information for better decision-making, disaster preparedness, and community development planning.</p>
+                
+                <div class="feature-highlights">
+                    <div class="feature-item">
+                        <div class="feature-icon">🗺️</div>
+                        <h4>Digital Mapping</h4>
+                        <p>Interactive maps with household and facility data</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <h4>Data Analytics</h4>
+                        <p>Real-time statistics and community insights</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🛡️</div>
+                        <h4>Risk Assessment</h4>
+                        <p>Vulnerability mapping for disaster preparedness</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">👥</div>
+                        <h4>Community Focus</h4>
+                        <p>Designed for barangay officials and residents</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background -->
+            <div class="about-section">
+                <h2><i class="fas fa-history"></i> Background & Context</h2>
+                <p>Barangay Cagpile in Oras, Eastern Samar is a coastal community exposed to natural hazards such as typhoons, storm surges, and flooding. These risks highlight the critical need for accurate spatial information for preparedness and response planning.</p>
+                <p>Traditional manual mapping methods are being replaced by this digital GIS-based solution to improve accuracy, accessibility, and decision-making capabilities for barangay officials and emergency responders.</p>
+                <p>The system represents a significant step forward in community-based disaster risk reduction and sustainable development planning.</p>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="about-section">
+                <h2><i class="fas fa-laptop-code"></i> Technology Stack</h2>
+                <p>Built with modern, open-source technologies to ensure sustainability and accessibility:</p>
+                
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <h3><i class="fas fa-server"></i> Backend</h3>
+                        <ul>
+                            <li>Flask Python Framework</li>
+                            <li>RESTful API Architecture</li>
+                            <li>GeoJSON Data Processing</li>
+                            <li>SQLite Database</li>
+                            <li>Python Data Analytics</li>
+                        </ul>
+                    </div>
+                    <div class="tech-item">
+                        <h3><i class="fas fa-desktop"></i> Frontend</h3>
+                        <ul>
+                            <li>HTML5, CSS3, JavaScript</li>
+                            <li>Leaflet.js Mapping Library</li>
+                            <li>Responsive Web Design</li>
+                            <li>Modern CSS Grid & Flexbox</li>
+                            <li>Font Awesome Icons</li>
+                        </ul>
+                    </div>
+                    <div class="tech-item">
+                        <h3><i class="fas fa-map-marked-alt"></i> GIS Tools</h3>
+                        <ul>
+                            <li>QGIS Desktop Application</li>
+                            <li>GPS Data Collection</li>
+                            <li>OpenStreetMap Integration</li>
+                            <li>GeoJSON Standard Format</li>
+                            <li>Spatial Data Analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Objectives -->
+            <div class="about-section">
+                <h2><i class="fas fa-bullseye"></i> Project Objectives</h2>
+                <p>The system aims to achieve the following key objectives for Barangay Cagpile:</p>
+                
+                <div class="objectives-list">
+                    <div class="objective-item">
+                        <h3>Data Collection</h3>
+                        <p>Collect comprehensive GPS and demographic data of all households and facilities in Barangay Cagpile using modern surveying techniques.</p>
+                    </div>
+                    <div class="objective-item">
+                        <h3>Digital Mapping</h3>
+                        <p>Create a comprehensive GIS-based digital map using QGIS that accurately represents the barangay's spatial layout and infrastructure.</p>
+                    </div>
+                    <div class="objective-item">
+                        <h3>Information Accessibility</h3>
+                        <p>Provide an interactive web-based platform for easy access to barangay information for officials, researchers, and community members.</p>
+                    </div>
+                    <div class="objective-item">
+                        <h3>Disaster Preparedness</h3>
+                        <p>Support disaster risk reduction through accurate spatial data, vulnerability assessment, and emergency planning capabilities.</p>
+                    </div>
+                    <div class="objective-item">
+                        <h3>Community Development</h3>
+                        <p>Enable evidence-based planning for infrastructure development, social services, and resource allocation.</p>
+                    </div>
+                    <div class="objective-item">
+                        <h3>Research Platform</h3>
+                        <p>Serve as a foundation for academic research in community informatics, disaster management, and geographic information systems.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Development Team -->
+            <div class="about-section">
+                <h2><i class="fas fa-users"></i> Development Team</h2>
+                <p>This project is the result of dedicated work by students and faculty at Eastern Samar State University:</p>
+                
+                <div class="team-info">
+                    <p><strong>Researcher:</strong> Jerico Jr. O. Alvarez</p>
+                    <p><strong>Course:</strong> Bachelor of Science in Computer Science</p>
+                    <p><strong>Institution:</strong> Eastern Samar State University - Main Campus</p>
+                    <p><strong>College:</strong> College of Computer Studies</p>
+                    <p><strong>Adviser:</strong> Mr. Eleaczar Arma</p>
+                    <p><strong>Academic Year:</strong> 2023-2024</p>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="about-section">
+                <h2><i class="fas fa-envelope"></i> Contact Information</h2>
+                <p>For inquiries, collaborations, or technical support, please contact:</p>
+                
+                <div class="contact-info">
+                    <p><strong>Institution:</strong> Eastern Samar State University</p>
+                    <p><strong>College:</strong> College of Computer Studies</p>
+                    <p><strong>Address:</strong> Borongan City, Eastern Samar</p>
+                    <p><strong>Email:</strong> ccsbor@essu.edu.ph</p>
+                    <p><strong>Phone:</strong> +63 (XXX) XXX-XXXX</p>
+                </div>
+                
+                <p style="margin-top: 1rem; font-style: italic; color: var(--gray);">
+                    This system is developed as part of academic research and is intended for community service and educational purposes.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

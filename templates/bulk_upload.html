@@ -1,0 +1,558 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Upload - {{ super() }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-page {
+        padding: 2rem 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: calc(100vh - 120px);
+    }
+
+    .upload-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 0 1rem;
+    }
+
+    .upload-header h1 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .upload-header p {
+        color: var(--gray);
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .upload-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    @media (min-width: 1024px) {
+        .upload-container {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .upload-card, .template-card {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    @media (min-width: 768px) {
+        .upload-card, .template-card {
+            padding: 3rem;
+        }
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .card-title {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .upload-area {
+        border: 3px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        cursor: pointer;
+    }
+
+    .upload-area:hover {
+        border-color: var(--primary);
+        background: #f0f7ff;
+    }
+
+    .upload-area.dragover {
+        border-color: var(--primary);
+        background: #e0f2fe;
+        transform: scale(1.02);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+
+    .upload-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+        color: var(--gray);
+        margin-bottom: 1.5rem;
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .browse-btn {
+        display: inline-block;
+        padding: 0.75rem 2rem;
+        background: var(--primary);
+        color: white;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .browse-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .file-info {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #ecfdf5;
+        border-radius: 6px;
+        border-left: 4px solid #10b981;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #065f46;
+        margin-bottom: 0.25rem;
+    }
+
+    .file-size {
+        color: #047857;
+        font-size: 0.875rem;
+    }
+
+    .upload-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .template-info {
+        margin: 2rem 0;
+    }
+
+    .template-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .template-table th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .template-table td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.875rem;
+    }
+
+    .template-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .template-table tr:hover {
+        background: #f8fafc;
+    }
+
+    .required-badge {
+        background: #ef4444;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .optional-badge {
+        background: #6b7280;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .download-section {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .download-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .instructions {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        padding: 2rem;
+        border-radius: 8px;
+        border-left: 4px solid #f59e0b;
+        margin-top: 2rem;
+    }
+
+    .instructions h4 {
+        color: #92400e;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .instructions ol {
+        margin: 0;
+        padding-left: 1.5rem;
+        color: #92400e;
+    }
+
+    .instructions li {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .upload-header h1 {
+            font-size: 2rem;
+        }
+        
+        .upload-card, .template-card {
+            padding: 1.5rem;
+        }
+        
+        .upload-area {
+            padding: 2rem 1rem;
+        }
+        
+        .template-table {
+            font-size: 0.8rem;
+        }
+        
+        .template-table th,
+        .template-table td {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .upload-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-page">
+    <div class="container">
+        <div class="upload-header">
+            <h1>Bulk Upload Households</h1>
+            <p>Upload multiple households at once using a CSV file. Download the template and follow the format guidelines.</p>
+        </div>
+
+        <div class="upload-container">
+            <!-- Upload Card -->
+            <div class="upload-card">
+                <div class="card-header">
+                    <div class="card-icon">📤</div>
+                    <h2 class="card-title">Upload CSV File</h2>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Choose CSV File or Drag & Drop</div>
+                        <div class="upload-hint">Supports .csv files only. Max file size: 10MB</div>
+                        
+                        <input type="file" id="csv_file" name="csv_file" accept=".csv" class="file-input" required>
+                        <label for="csv_file" class="browse-btn">
+                            Browse Files
+                        </label>
+                    </div>
+
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-name" id="fileName"></div>
+                        <div class="file-size" id="fileSize"></div>
+                    </div>
+
+                    <div class="instructions">
+                        <h4>📋 Before Uploading:</h4>
+                        <ol>
+                            <li>Download and use the template below</li>
+                            <li>Fill in all required fields (marked with *)</li>
+                            <li>Save your file as CSV format</li>
+                            <li>Ensure coordinates are in correct format</li>
+                        </ol>
+                    </div>
+
+                    <div class="upload-actions">
+                        <button type="submit" class="btn btn-primary" id="uploadBtn" disabled>
+                            <i class="fas fa-upload"></i> Upload and Process
+                        </button>
+                        <a href="{{ url_for('household_data') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Template Card -->
+            <div class="template-card">
+                <div class="card-header">
+                    <div class="card-icon">📥</div>
+                    <h2 class="card-title">CSV Template Guide</h2>
+                </div>
+
+                <div class="template-info">
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">
+                        Use the template below to ensure your CSV file follows the correct format. Required fields are marked with *.
+                    </p>
+
+                    <div class="template-table-container">
+                        <table class="template-table">
+                            <thead>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Description</th>
+                                    <th>Required</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>household_id</strong></td>
+                                    <td>Unique household identifier</td>
+                                    <td><span class="required-badge">Required</span></td>
+                                    <td>CPL-101</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>head_of_household</strong></td>
+                                    <td>Name of household head</td>
+                                    <td><span class="required-badge">Required</span></td>
+                                    <td>Juan Dela Cruz</td>
+                                </tr>
+                                <tr>
+                                    <td>num_residents</td>
+                                    <td>Number of residents</td>
+                                    <td><span class="optional-badge">Optional</span></td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>has_seniors_pwd</td>
+                                    <td>YES/NO for senior citizens or PWDs</td>
+                                    <td><span class="optional-badge">Optional</span></td>
+                                    <td>YES</td>
+                                </tr>
+                                <tr>
+                                    <td>contact</td>
+                                    <td>Contact number</td>
+                                    <td><span class="optional-badge">Optional</span></td>
+                                    <td>09123456789</td>
+                                </tr>
+                                <tr>
+                                    <td>purok</td>
+                                    <td>Purok number (1-5)</td>
+                                    <td><span class="optional-badge">Optional</span></td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>latitude</strong></td>
+                                    <td>Latitude coordinate</td>
+                                    <td><span class="required-badge">Required</span></td>
+                                    <td>12.2392</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>longitude</strong></td>
+                                    <td>Longitude coordinate</td>
+                                    <td><span class="required-badge">Required</span></td>
+                                    <td>125.3185</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="download-section">
+                    <a href="{{ url_for('download_template') }}" class="download-btn" id="downloadTemplate">
+                        <i class="fas fa-download"></i>
+                        Download CSV Template
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('csv_file');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadForm = document.getElementById('uploadForm');
+
+    // File input change event
+    fileInput.addEventListener('change', function(e) {
+        handleFileSelection(e.target.files[0]);
+    });
+
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                fileInput.files = files;
+                handleFileSelection(file);
+            } else {
+                alert('Please upload a CSV file only.');
+            }
+        }
+    });
+
+    // Click on upload area to trigger file input
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    function handleFileSelection(file) {
+        if (file) {
+            if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    alert('File size must be less than 10MB.');
+                    return;
+                }
+
+                // Show file info
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                
+                // Enable upload button
+                uploadBtn.disabled = false;
+                
+                // Update upload area appearance
+                uploadArea.style.borderColor = '#10b981';
+                uploadArea.style.background = '#ecfdf5';
+                uploadArea.querySelector('.upload-icon').textContent = '✅';
+                uploadArea.querySelector('.upload-text').textContent = 'File Selected';
+                uploadArea.querySelector('.upload-hint').textContent = 'Ready to upload';
+            } else {
+                alert('Please select a CSV file.');
+            }
+        }
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Form submission
+    uploadForm.addEventListener('submit', function(e) {
+        const file = fileInput.files[0];
+        if (!file) {
+            e.preventDefault();
+            alert('Please select a CSV file to upload.');
+            return;
+        }
+
+        // Show loading state
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        uploadBtn.disabled = true;
+    });
+
+    // Download template button animation
+    const downloadBtn = document.getElementById('downloadTemplate');
+    downloadBtn.addEventListener('click', function(e) {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+        setTimeout(() => {
+            this.innerHTML = '<i class="fas fa-download"></i> Download CSV Template';
+        }, 2000);
+    });
+});
+</script>
+{% endblock %}

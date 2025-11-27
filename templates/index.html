@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Home - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Barangay Cagpile Information Mapping System</h1>
+        <p class="hero-subtitle">A QGIS-based mapping solution for community planning and disaster risk reduction</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('map_view') }}" class="btn btn-primary">Explore Interactive Map</a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">View Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <h2>System Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>📊 Interactive Mapping</h3>
+                <p>Visualize household locations, facilities, and barangay boundaries with interactive maps powered by QGIS and Leaflet.js</p>
+            </div>
+            <div class="feature-card">
+                <h3>👥 Household Management</h3>
+                <p>Track household information including vulnerable populations (seniors and PWDs) for better disaster preparedness</p>
+            </div>
+            <div class="feature-card">
+                <h3>🏢 Facility Mapping</h3>
+                <p>Map and manage key facilities like evacuation centers, health centers, and schools</p>
+            </div>
+            <div class="feature-card">
+                <h3>📈 Data Analytics</h3>
+                <p>Generate statistics and insights for informed decision-making in community planning</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="quick-stats-section">
+    <div class="container">
+        <h2>Quick Statistics</h2>
+        <div class="stats-grid" id="quick-stats">
+            <!-- Stats will be loaded via JavaScript -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load quick statistics
+    fetch('/api/statistics')
+        .then(response => response.json())
+        .then(stats => {
+            const statsGrid = document.getElementById('quick-stats');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_households}</div>
+                    <div class="stat-label">Total Households</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_facilities}</div>
+                    <div class="stat-label">Total Facilities</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.vulnerable_households}</div>
+                    <div class="stat-label">Vulnerable Households</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_residents}</div>
+                    <div class="stat-label">Total Residents</div>
+                </div>
+            `;
+        })
+        .catch(error => {
+            console.error('Error loading statistics:', error);
+        });
+});
+</script>
+{% endblock %}

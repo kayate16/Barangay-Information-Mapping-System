@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Interactive Map - Barangay Cagpile{% endblock %}
+
+{% block extra_css %}
+<style>
+    .map-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .map-header {
+        background: var(--white);
+        padding: 2rem 0;
+        box-shadow: var(--shadow);
+    }
+
+    .map-header h1 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        font-size: 2.2rem;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .map-header p {
+        color: var(--gray);
+        font-size: 1.2rem;
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .map-container {
+        display: flex;
+        flex: 1;
+        height: calc(100vh - 200px);
+        background: var(--white);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        margin: 2rem auto;
+        max-width: 1400px;
+        width: 95%;
+    }
+
+    .map-sidebar {
+        width: 350px;
+        background: var(--white);
+        padding: 2rem;
+        overflow-y: auto;
+        border-right: 1px solid #e1e8ed;
+    }
+
+    .map-main {
+        flex: 1;
+        position: relative;
+        background: var(--light);
+    }
+
+    #map {
+        height: 100%;
+        width: 100%;
+    }
+
+    .map-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        background: var(--light);
+        color: var(--gray);
+        font-size: 1.2rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid var(--secondary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-page">
+    <div class="map-header">
+        <div class="container">
+            <h1>Barangay Cagpile Interactive Map</h1>
+            <p>Explore households, facilities, and infrastructure in Barangay Cagpile, Oras, Eastern Samar</p>
+        </div>
+    </div>
+    
+    <div class="map-container">
+        <div class="map-sidebar">
+            <div class="sidebar-section">
+                <h3>🗺️ Map Layers</h3>
+                <div class="layer-controls">
+                    <div class="layer-group">
+                        <h4>🌍 Base Layers</h4>
+                        <label class="layer-checkbox">
+                            <input type="radio" name="base-layer" value="osm" checked>
+                            <span class="checkmark"></span>
+                            OpenStreetMap
+                        </label>
+                        <label class="layer-checkbox">
+                            <input type="radio" name="base-layer" value="satellite">
+                            <span class="checkmark"></span>
+                            Satellite View
+                        </label>
+                    </div>
+                    
+                    <div class="layer-group">
+                        <h4>📊 Overlay Layers</h4>
+                        <label class="layer-checkbox">
+                            <input type="checkbox" id="households-layer" checked>
+                            <span class="checkmark"></span>
+                            🏠 Households
+                        </label>
+                        <label class="layer-checkbox">
+                            <input type="checkbox" id="facilities-layer" checked>
+                            <span class="checkmark"></span>
+                            🏢 Facilities
+                        </label>
+                        <label class="layer-checkbox">
+                            <input type="checkbox" id="roads-layer" checked>
+                            <span class="checkmark"></span>
+                            🛣️ Roads
+                        </label>
+                        <label class="layer-checkbox">
+                            <input type="checkbox" id="boundary-layer" checked>
+                            <span class="checkmark"></span>
+                            🗺️ Barangay Boundary
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>🎨 Map Legend</h3>
+                <div class="legend">
+                    <div class="legend-subtitle">🏠 Households</div>
+                    <div class="legend-item">
+                        <span class="legend-color household-color"></span>
+                        <span>Regular Households</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color household-vulnerable-color"></span>
+                        <span>Vulnerable Households (Seniors/PWDs)</span>
+                    </div>
+                    
+                    <div class="legend-subtitle">🏢 Facilities</div>
+                    <div class="legend-item">
+                        <span class="legend-color facility-barangay-color"></span>
+                        <span>Government Offices</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color facility-education-color"></span>
+                        <span>Educational Facilities</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color facility-religious-color"></span>
+                        <span>Religious Facilities</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color facility-community-color"></span>
+                        <span>Community Facilities</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color facility-security-color"></span>
+                        <span>Security Facilities</span>
+                    </div>
+                    
+                    <div class="legend-subtitle">🏗️ Infrastructure</div>
+                    <div class="legend-item">
+                        <span class="legend-color road-color"></span>
+                        <span>Roads & Pathways</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color boundary-color"></span>
+                        <span>Barangay Boundary</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>💡 Map Tips</h3>
+                <div style="font-size: 0.9rem; color: var(--gray); line-height: 1.5;">
+                    <p>• <strong>Click</strong> on any building to see details</p>
+                    <p>• <strong>Hover</strong> over features to highlight them</p>
+                    <p>• <strong>Toggle layers</strong> using the checkboxes</p>
+                    <p>• <strong>Switch base maps</strong> for different views</p>
+                    <p>• <strong>Zoom</strong> to see more details</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-main">
+            <div id="map">
+                <div class="map-loading">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading Barangay Cagpile Map</h3>
+                    <p>Please wait while we load the interactive map data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('📍 Initializing Barangay Cagpile Interactive Map...');
+        
+        // Add some delay to show loading state
+        setTimeout(() => {
+            initializeMap();
+        }, 1000);
+    });
+</script>
+{% endblock %}
